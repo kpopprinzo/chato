@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Chato</title>
+<style>
+body{font-family:Arial;background:#000;color:#fff;margin:0} .screen{display:none;padding:20px} .active{display:block} input,button{padding:10px;margin:8px;width:100%;border-radius:8px;border:none} button{background:#0af;color:#fff} .user{padding:12px;border-bottom:1px solid #333;cursor:pointer}.dot{height:12px;width:12px;border-radius:50%;display:inline-block;margin-right:8px}.online{background:lime}.offline{background:gray} #messages{height:300px;overflow:auto;border:1px solid #333;padding:10px}
+</style>
+</head>
+<body>
+<div id="login" class="screen active">
+<h1>CHATO</h1>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="error"></p>
+</div>
+<div id="home" class="screen">
+<h2 id="welcome"></h2>
+<div id="users"></div>
+<button onclick="logout()">Logout</button>
+</div>
+<div id="chat" class="screen">
+<h2 id="chatWith"></h2>
+<div id="messages"></div>
+<input id="msg" placeholder="Type message">
+<button onclick="sendMsg()">Send</button>
+<button onclick="backHome()">Back</button>
+</div>
+<script>
+const users={Neo:'1234',Dineo:'5678',Prince:'prince1',Pride:'pride1',Dad:'dad123',Mom:'mom123'};
+let currentUser='',chatUser='';
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function login(){let u=user.value,p=pass.value;if(users[u]===p){currentUser=u;welcome.textContent='Welcome '+u;loadUsers();show('home')}else error.textContent='Wrong login';}
+function logout(){currentUser='';show('login');}
+function loadUsers(){usersDiv='';const div=document.getElementById('users');div.innerHTML='';Object.keys(users).filter(u=>u!==currentUser).forEach(u=>{div.innerHTML+=`<div class='user' onclick="openChat('${u}')"><span class='dot ${Math.random()>.5?'online':'offline'}'></span>${u}</div>`})}
+function openChat(u){chatUser=u;chatWith.textContent='Chat with '+u;loadMsgs();show('chat')}
+function key(){return [currentUser,chatUser].sort().join('-')}
+function loadMsgs(){messages.innerHTML=(JSON.parse(localStorage.getItem(key())||'[]')).map(m=>`<p><b>${m.from}:</b> ${m.text}</p>`).join('')}
+function sendMsg(){let msgs=JSON.parse(localStorage.getItem(key())||'[]');msgs.push({from:currentUser,text:msg.value});localStorage.setItem(key(),JSON.stringify(msgs));msg.value='';loadMsgs()}
+function backHome(){show('home')}
+</script>
+</body>
+</html>
